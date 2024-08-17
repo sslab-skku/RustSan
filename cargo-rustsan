@@ -1,0 +1,48 @@
+#!/usr/bin/python3
+import sys
+import os
+from subprocess import Popen, STDOUT
+
+
+def print_help():
+    pass
+
+
+env = os.environ.copy()
+if 'RUSTSAN_DIR' in env.keys():
+    RUSTSAN_DIR = env['RUSTSAN_DIR']
+else:
+    print("RUSTSAN_DIR is not in the environment variable. Use the default value.")
+
+user_rustc_flag = ''
+if 'RUSTFLAGS' in env.keys():
+    user_rustc_flag = env['RUSTFLAGS']
+
+LLVM = f"{RUSTSAN_DIR}/llvm-project"
+CLANG = f"{LLVM}/build/bin/clang"
+LLD = f"{LLVM}/build/bin/ld.lld"
+ASAN_LIB = f"{LLVM}/build/lib/clang/13.0.0/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.a"
+ANALYSIS_PASS = f"{RUSTSAN_DIR}/rustsan/AnalysisPass/build/libAnalysisPass.so"
+
+flags = [
+    "--pta-filter", "--emit llvm-ir",
+    "-C lto=fat",  "-C embed-bitcode", "-Clinker-plugin-lto", "-Copt-level=2",
+    f"-C linker={CLANG}",
+    "-C link-arg=-fuse-ld=lld",
+    f"-C link-arg=--ld-path={LLD}",
+    "-C link-arg=-flto",
+    "-C link-arg=-flegacy-pass-manager",
+    f"-C link-arg=-Wl,-mllvm=-load={ANALYSIS_PASS}",
+    f"-C link-arg={ASAN_LIB}",
+    "-C link-arg=-Wl,-mllvm=-stat=false",
+    "-C link-arg=-Wl,-mllvm=--asan-rust-safestack",
+    "-C link-arg=-Wl,-mllvm=-asan-instrument-rust",
+]
+
+
+rustsan_env = os.environ.copy()
+rustsan_env['RUSTFLAGS'] = user_rustc_flag + " " + " ".join(flags + [ ])
+
+p = Popen(['cargo', ] + sys.argv[3:], env=rustsan_env, stderr=STDOUT)
+p.wait()
+exit(p.returncode)

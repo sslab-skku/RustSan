@@ -1,0 +1,1 @@
+def int_unsafe_alloca : DefaultAttrsIntrinsic<[llvm_i64_ty]>;

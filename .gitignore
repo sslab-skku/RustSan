@@ -1,0 +1,26 @@
+target/
+build/
+.cache/
+.clangd/
+.vscode/
+__pycache__/
+
+# Object files
+*.o
+*.a
+*.obj
+
+# IR files
+*.ll
+*.bc
+*.mir
+
+# clangd file
+compile_commands.json
+
+# Fuzzing workspace
+fuzz/
+out/
+
+# LLVM workspace
+llvm-project-pure/

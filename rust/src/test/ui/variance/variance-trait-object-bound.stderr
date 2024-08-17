@@ -1,0 +1,8 @@
+error[E0208]: [-]
+  --> $DIR/variance-trait-object-bound.rs:14:1
+   |
+LL | struct TOption<'a> {
+   | ^^^^^^^^^^^^^^^^^^
+
+error: aborting due to previous error
+
