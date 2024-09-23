@@ -22,3 +22,4 @@ doxygen/
 *.obj
 *.svf
 cmake-build-debug/
+!.config.in
