@@ -327,18 +327,6 @@ impl<'a, 'll, 'tcx> BuilderMethods<'a, 'tcx> for Builder<'a, 'll, 'tcx> {
         */
 
         self.insert_unsafe_metadata(invoke);
-        /*
-        let x = self.get_unsafe_args();
-        if x != 0 {
-            invoke = unsafe {
-                llvm::LLVMAttachOPBundle(
-                    self.llbuilder,
-                    invoke,
-                    x
-                )
-            };
-        }
-        */
         invoke
     }
 
@@ -1343,16 +1331,7 @@ impl<'a, 'll, 'tcx> BuilderMethods<'a, 'tcx> for Builder<'a, 'll, 'tcx> {
                 }
             }
         }
-        let x = self.get_unsafe_args();
-        if x != 0 {
-            call = unsafe {
-                llvm::LLVMAttachOPBundle(
-                    self.llbuilder,
-                    call,
-                    x
-                )
-            };
-        }
+
         self.insert_unsafe_metadata(call);
         call
     }
