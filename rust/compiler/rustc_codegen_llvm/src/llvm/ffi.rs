@@ -2464,5 +2464,4 @@ extern "C" {
     pub fn LLVMRustGetMangledName(V: &Value, out: &RustString);
 
     pub fn LLVMRustGetElementTypeArgIndex(CallSite: &Value) -> i32;
-    pub fn LLVMAttachOPBundle<'a>(B: &Builder<'a>, V: &Value, args:u32) -> &'a Value;
 }

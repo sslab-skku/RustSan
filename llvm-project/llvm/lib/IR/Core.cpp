@@ -4209,24 +4209,3 @@ void LLVMStopMultithreaded() {
 LLVMBool LLVMIsMultithreaded() {
   return llvm_is_multithreaded();
 }
-
-/*===-- RustSan ------------------------------------------------------===*/
-LLVMValueRef LLVMAttachOPBundle(LLVMBuilderRef B, LLVMValueRef V, unsigned args) {
-  CallBase* CI = dyn_cast<CallBase>(unwrap(V));
-  IntegerType* Ty =  unwrap(B)->getInt32Ty();
-  if(CI){
-    std::vector<Value*> v;
-    for (int i=0; i<9; ++i){
-      if (args % 2 == 1) {
-        v.push_back(ConstantInt::get(Ty, i));
-      }
-      args = args >> 1;
-    }
-    const OperandBundleDef* OPBundle = new OperandBundleDef(std::string("Unsafe.arg"), v);
-    auto Ref = ArrayRef<OperandBundleDef>(*OPBundle);
-    auto newCB = CallBase::Create(CI, Ref, nullptr);
-    ReplaceInstWithInst(CI, newCB);
-    return wrap(newCB);
-  }
-  llvm_unreachable("LLVMAttachOPBundle: V should be CallBase!");
-}
